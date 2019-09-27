@@ -16,7 +16,7 @@ class Player
     private $x;
     private $y;
 
-    public function __construct(string $id, float $x, float $y)
+    public function __construct(string $id, int $x, int $y)
     {
         $this->id = $id;
         $this->x  = $x;

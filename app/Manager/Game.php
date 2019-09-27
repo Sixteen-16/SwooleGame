@@ -36,6 +36,36 @@ class Game
      */
     public function playerMove(string $playerId, string $direction) {
         $this->players[$playerId]->{$direction}();
+        $x = $this->players[$playerId]->getX();
+        $y = $this->players[$playerId]->getY();
+
+        $isMove = $this->checkCanMove($x, $y);
+        if (!$isMove) {
+            switch ($direction) {
+                case Player::UP:
+                    $this->players[$playerId]->{Player::DOWN}();
+                    break;
+                case Player::DOWN:
+                    $this->players[$playerId]->{Player::UP}();
+                    break;
+                case Player::LEFT:
+                    $this->players[$playerId]->{Player::RIGHT}();
+                    break;
+                default:
+                    $this->players[$playerId]->{Player::LEFT}();
+            }
+        }
+    }
+
+    /**
+     * 验证是否可以移动
+     * @param int $x
+     * @param int $y
+     * @return bool
+     */
+    private function checkCanMove(int $x, int $y) {
+        $mapData = $this->gameMap->getMapData();
+        return (bool)$mapData[$x][$y];
     }
 
     /**
@@ -43,23 +73,25 @@ class Game
      */
     public function printGameMap() {
         $mapData = $this->gameMap->getMapData();
-        foreach ($mapData as $y => $item) {
-            foreach ($item as $x => $value) {
+        if (!empty($this->players)) {
+            $role = [2 => '寻', 3 => '藏'];
+            /**
+             * @var Player $player
+             */
+            foreach ($this->players as $player) {
+                $mapData[$player->getX()][$player->getY()] = $player->getType() + 1;
+            }
+        }
+
+        foreach ($mapData as $item) {
+            foreach ($item as $value) {
                 if (empty($value)) {
-                    echo '墙,';
-                } else {
-                    echo '   ';
+                    echo '口';
+                } elseif ($value == 1) {
+                    echo '  ';
                 }
-                if (!empty($this->players)) {
-                    foreach ($this->players as $player) {
-                        if ($player->getX() == $x && $player->getY() == $y) {
-                            if ($player->getType() == Player::PLAY_TYPE_SEARCH) {
-                                echo '寻!';
-                            } else {
-                                echo '藏!';
-                            }
-                        }
-                    }
+                if (isset($role) && $value && $value != 1) {
+                    echo $role[$value];
                 }
             }
             echo "\n";

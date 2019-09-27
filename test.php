@@ -11,4 +11,6 @@ $game = new Game();
 $game->createPlayer($redId, 6, 1);
 $game->createPlayer($blueId, 6, 10);
 $game->playerMove($redId, Player::UP);
+$game->playerMove($redId, Player::UP);
+$game->playerMove($redId, Player::UP);
 $game->printGameMap();
