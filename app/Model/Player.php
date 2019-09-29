@@ -7,6 +7,12 @@ class Player
     const DOWN  = 'down';
     const LEFT  = 'left';
     const RIGHT = 'right';
+    const DIRECTION = [
+        self::UP,
+        self::DOWN,
+        self::LEFT,
+        self::RIGHT
+    ];
 
     const PLAY_TYPE_SEARCH = 1;
     const PLAY_TYPE_HIDE   = 2;

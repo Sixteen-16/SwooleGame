@@ -97,4 +97,32 @@ class Game
             echo "\n";
         }
     }
+
+    /**
+     * 验证游戏结束
+     * @return bool
+     */
+    public function isGameOver() {
+        $players = $this->players ?: [];
+        $result  = false;
+
+        if ($players) {
+            $x = -1;
+            $y = -1;
+            $players = array_values($this->players);
+            /**
+             * @var Player $player
+             */
+            foreach ($players as $key => $player) {
+                if ($key == 0) {
+                    $x = $player->getX();
+                    $y = $player->getY();
+                } elseif ($player->getX() == $x && $player->getY() == $y) {
+                    echo $result;
+                    $result = true;
+                }
+            }
+            return $result;
+        }
+    }
 }
