@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue-Demo</title>
+    <script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>
+    <link rel="icon" href="data:;base64,=">
+</head>
+<body>
+
+<div id="app">
+
+</div>
+
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            message: 'Hello Vue!',
+            websock: null
+        },
+        created() { // 类似构造函数 实例化被调用
+            this.initWebSocket(); // 初始化websocket链接
+        },
+        destroyed() { // 类似析构函数 实例销毁调用
+            this.websock.close() // 关闭链接
+        },
+        methods: {
+            initWebSocket() {
+                const WS_URL = "ws://localhost:8811";
+                this.websock = new WebSocket(WS_URL);
+                this.websock.onmessage = this.websocketOnMessage;
+                this.websock.onopen    = this.websocketOnOpen;
+                this.websock.onerror   = this.websocketOnError;
+                this.websock.onclose   = this.websocketOnClose;
+            },
+            websocketOnOpen() { // 建立成功执行send方法发送数据
+                let actions = {"test": "123456"};
+                this.websocketSend(actions);
+            },
+            websocketOnError() { // 建立失败重连
+                this.initWebSocket();
+            },
+            websocketOnMessage(e) { // 数据接收
+                let message = JSON.parse(e.data);
+            },
+            websocketSend(Data) { // 数据发送
+                this.websock.send(JSON.stringify(Data));
+            },
+            websocketOnClose(e) {
+                console.log('断开连接', e);
+            },
+        }
+    })
+</script>
+</body>
+</html>
