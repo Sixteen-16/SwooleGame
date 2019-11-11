@@ -14,10 +14,15 @@ class Server
         'enable_static_handler' => true,
     ];
 
+    const CLIENT_CODE_MATCH_PLAYER = 600;
+
     private $ws;
+    private $logic;
 
     public function __construct()
     {
+        $this->logic = new \app\Manager\Logic();
+
         $this->ws = new \Swoole\WebSocket\Server(self::HOST, self::PORT);
         $this->ws->set(self::CONFIG);
         $this->ws->on('start', [$this, 'onStart']);
@@ -43,15 +48,27 @@ class Server
 
     public function onOpen($server, $request) {
         DataCenter::log(sprintf('client open fd: %d', $request->fd));
+
+        $playerId = $request->get['player_id'];
+        DataCenter::setPlayerInfo($playerId, $request->fd);
     }
 
     public function onMessage($server, $request) {
         DataCenter::log(sprintf('client open fd: %d, message: %s', $request->fd, $request->data));
         $server->push($request->fd, 'test success');
+
+        $data = json_decode($request->data, true);
+        $playerId = DataCenter::getPlayerId($request->fd);
+        switch ($data['code']) {
+            case self::CLIENT_CODE_MATCH_PLAYER:
+                $this->logic->matchPlayer($playerId);
+                break;
+        }
     }
 
     public function onClose($server, $fd) {
         DataCenter::log(sprintf('client close fd: %d', $fd));
+        DataCenter::delPlayerInfo($fd);
     }
 }
 new Server();

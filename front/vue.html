@@ -9,30 +9,41 @@
 <body>
 
 <div id="app">
-
+    <label>
+        玩家ID：
+        <input type="text" :value="playerId">
+    </label>
+    <button @click="matchPlayer">匹配</button>
 </div>
 
 <script>
     var app = new Vue({
         el: '#app',
         data: {
-            message: 'Hello Vue!',
-            websock: null
+            message:  'Hello Vue!',
+            webSock:  null,
+            playerId: 'player_' + Math.round(Math.random() * 1000)
         },
         created() { // 类似构造函数 实例化被调用
             this.initWebSocket(); // 初始化websocket链接
         },
         destroyed() { // 类似析构函数 实例销毁调用
-            this.websock.close() // 关闭链接
+            this.webSock.close() // 关闭链接
         },
         methods: {
+            // 匹配玩家
+            matchPlayer() {
+                let actions = {"code": 600};
+                this.websocketSend(actions)
+            },
+            // 初始化websocket
             initWebSocket() {
-                const WS_URL = "ws://localhost:8811";
-                this.websock = new WebSocket(WS_URL);
-                this.websock.onmessage = this.websocketOnMessage;
-                this.websock.onopen    = this.websocketOnOpen;
-                this.websock.onerror   = this.websocketOnError;
-                this.websock.onclose   = this.websocketOnClose;
+                const WS_URL = "ws://192.168.30.67:8811?player_id=" + this.playerId;
+                this.webSock = new WebSocket(WS_URL);
+                this.webSock.onmessage = this.websocketOnMessage;
+                this.webSock.onopen    = this.websocketOnOpen;
+                this.webSock.onerror   = this.websocketOnError;
+                this.webSock.onclose   = this.websocketOnClose;
             },
             websocketOnOpen() { // 建立成功执行send方法发送数据
                 let actions = {"test": "123456"};
@@ -45,7 +56,7 @@
                 let message = JSON.parse(e.data);
             },
             websocketSend(Data) { // 数据发送
-                this.websock.send(JSON.stringify(Data));
+                this.webSock.send(JSON.stringify(Data));
             },
             websocketOnClose(e) {
                 console.log('断开连接', e);
