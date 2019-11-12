@@ -10,6 +10,16 @@ class DataCenter
     const LIST_KEY   = 'wait_list';
 
     public static $global;
+    public static $server;
+
+    /**
+     * 初始化redis数据
+     */
+    public static function initDataCenter() {
+        self::getRedis()->delete(self::LIST_KEY);
+        self::getRedis()->delete(self::PLAYER_ID);
+        self::getRedis()->delete(self::PLAYER_FD);
+    }
 
     /**
      * 输出日志

@@ -14,6 +14,9 @@
         <input type="text" :value="playerId">
     </label>
     <button @click="matchPlayer">匹配</button>
+    <div v-if="matching" style="display: inline">
+        匹配中……
+    </div>
 </div>
 
 <script>
@@ -22,7 +25,9 @@
         data: {
             message:  'Hello Vue!',
             webSock:  null,
-            playerId: 'player_' + Math.round(Math.random() * 1000)
+            playerId: 'player_' + Math.round(Math.random() * 1000),
+            roomId: null,
+            matching: false
         },
         created() { // 类似构造函数 实例化被调用
             this.initWebSocket(); // 初始化websocket链接
@@ -34,7 +39,13 @@
             // 匹配玩家
             matchPlayer() {
                 let actions = {"code": 600};
-                this.websocketSend(actions)
+                this.websocketSend(actions);
+                this.matching = true
+            },
+            startRoom() {
+                let actions = {"code": 601, 'room_id': this.roomId};
+                this.websocketSend(actions);
+                this.matching = false
             },
             // 初始化websocket
             initWebSocket() {
@@ -46,14 +57,21 @@
                 this.webSock.onclose   = this.websocketOnClose;
             },
             websocketOnOpen() { // 建立成功执行send方法发送数据
-                let actions = {"test": "123456"};
+                let actions = {"code": 600};
                 this.websocketSend(actions);
             },
             websocketOnError() { // 建立失败重连
                 this.initWebSocket();
             },
             websocketOnMessage(e) { // 数据接收
-                let message = JSON.parse(e.data);
+                let message      = JSON.parse(e.data);
+                let responseData = message.data;
+                switch (message.code) {
+                    case 2: // 匹配成功
+                        this.roomId = responseData.room_id;
+                        this.startRoom();
+                        break
+                }
             },
             websocketSend(Data) { // 数据发送
                 this.webSock.send(JSON.stringify(Data));
