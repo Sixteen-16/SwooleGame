@@ -166,12 +166,12 @@
                 const WS_URL = "ws://192.168.30.67:8811?player_id=" + this.playerId;
                 this.webSock = new WebSocket(WS_URL);
                 this.webSock.onmessage = this.websocketOnMessage;
-                // this.webSock.onopen    = this.websocketOnOpen;
+                this.webSock.onopen    = this.websocketOnOpen;
                 this.webSock.onerror   = this.websocketOnError;
                 this.webSock.onclose   = this.websocketOnClose;
             },
             websocketOnOpen() { // 建立成功执行send方法发送数据
-                let actions = {"code": 600};
+                let actions = {"code": 200};
                 this.websocketSend(actions);
             },
             websocketOnError() { // 建立失败重连
