@@ -56,7 +56,7 @@ class DataCenter
 
     /**
      * 写入等待队列
-     * @param int $playerId
+     * @param string $playerId
      */
     public static function pushPlayerToWaitList(string $playerId) {
         self::getRedis()->lPush(self::LIST_KEY, $playerId);
