@@ -18,7 +18,9 @@ class Server
         'task_worker_num'       => 4,
     ];
 
-    const CLIENT_CODE_MATCH_PLAYER = 600;
+    const CLIENT_CODE_MATCH_PLAYER  = 600;
+    const CLIENT_CODE_MATCH_SUCCESS = 601;
+    const CLIENT_CODE_PLAYER_MOVE   = 602;
 
     private $ws;
     private $logic;
@@ -89,6 +91,12 @@ class Server
             case self::CLIENT_CODE_MATCH_PLAYER:
                 $this->logic->matchPlayer($playerId);
                 break;
+            case self::CLIENT_CODE_MATCH_SUCCESS:
+                $this->logic->startRoom($data['room_id'], $playerId);
+                break;
+            case self::CLIENT_CODE_PLAYER_MOVE:
+                $this->logic->playerMove($playerId, $data['direction']);
+                break;
         }
     }
 
@@ -119,7 +127,7 @@ class Server
     }
 
     /**
-     * 匹配结束逻辑
+     * 配合异步
      * @param $server
      * @param $taskId
      * @param $data

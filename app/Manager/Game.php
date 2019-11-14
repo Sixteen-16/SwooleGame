@@ -15,6 +15,22 @@ class Game
     }
 
     /**
+     * 获取玩家集合
+     * @return array
+     */
+    public function getPlayers() {
+        return $this->players;
+    }
+
+    /**
+     * 获取地图数据
+     * @return array
+     */
+    public function getMapData() {
+        return $this->gameMap->getMapData();
+    }
+
+    /**
      * 创建玩家
      * @param $playerId
      * @param $x

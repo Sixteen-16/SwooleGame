@@ -8,6 +8,7 @@ class DataCenter
     const PLAYER_ID  = 'playerId';
     const PLAYER_FD  = 'playerFd';
     const LIST_KEY   = 'wait_list';
+    const ROOM_ID    = 'room_id';
 
     public static $global;
     public static $server;
@@ -19,6 +20,7 @@ class DataCenter
         self::getRedis()->delete(self::LIST_KEY);
         self::getRedis()->delete(self::PLAYER_ID);
         self::getRedis()->delete(self::PLAYER_FD);
+        self::getRedis()->delete(self::ROOM_ID);
     }
 
     /**
@@ -139,5 +141,31 @@ class DataCenter
 
         self::delPlayerFd($playerId);
         self::delPlayerId($fd);
+    }
+
+    /**
+     * 设置房间ID
+     * @param string $roomId 房间ID
+     * @param string $playerId 用户ID
+     */
+    public static function setRoomId(string $roomId, string $playerId) {
+        self::getRedis()->hSet(self::ROOM_ID, $playerId, $roomId);
+    }
+
+    /**
+     * 获取房间ID
+     * @param string $playerId 用户ID
+     * @return string
+     */
+    public static function getRoomId(string $playerId) {
+        return self::getRedis()->hGet(self::ROOM_ID, $playerId);
+    }
+
+    /**
+     * 删除房间ID
+     * @param string $playerId 用户ID
+     */
+    public static function delRoomId(string $playerId) {
+        self::getRedis()->hDel(self::ROOM_ID, $playerId);
     }
 }
