@@ -151,7 +151,7 @@ class Logic
         if ($gameManager->isGameOver()) {
             $players = $gameManager->getPlayers();
             $winner  = current($players)->getId();
-            foreach ($players as $player) {
+            foreach (array_reverse($players) as $player) {
                 Sender::sendMessage($player->getId(), Sender::MSG_GAME_OVER, ['winner' => $winner]);
                 DataCenter::delRoomId($player->getId());
             }
